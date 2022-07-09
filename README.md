@@ -13,7 +13,7 @@ This project supports a Slack application used by the Collections & Loans depart
 ## Option 1
 Trigger CSV and PDF creation via Slack.
 ### Step 1
-- Run run.py from Command Prompt or Terminal: `python3 path/to/run.py`
+- Run run.py from Command Prompt or Terminal: `python path/to/run.py`
 - You should see this response: ⚡️ Bolt app is running!
 ### Step 2
 - Mention __@Virtual Courier Archive__ in a Slack channel.
@@ -31,7 +31,7 @@ Trigger CSV and PDF creation from Command Prompt or Terminal.
 ### Step 2
 - Run slackless.py from Command Prompt or Terminal.
   ```
-  Usage: python3 path/to/slackless.py <channel_name> [-output] [-post] [-keep]
+  Usage: python path/to/slackless.py <channel_name> [-output] [-post] [-keep]
      <channel_name>: the name of a Slack channel that @Virtual Courier Archive has been invited to
      [-output]: the location where the output folder should be created
      [-post]: send CSV and PDF to the Slack channel
