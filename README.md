@@ -1,4 +1,4 @@
-# virtual-courier
+# slack-archive (aka virtual-courier)
 This project supports a Slack application used by the Collections & Loans department of an art museum. When the application is added to a private channel, it generates a CSV and PDF of the channel history and sends the files to the channel. 
 # Setup
 - Install the virtual-courier package.
