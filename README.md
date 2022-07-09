@@ -4,7 +4,7 @@ This project supports a Slack application used by the Collections & Loans depart
 - Install the virtual-courier package.
 - Install dependencies shown in requirements.txt.
 - Ensure that the __Virtual Courier Archive__ application has been installed in the Slack workspace.
-- In the virtual-courier folder, create a file called .env to hold the tokens used to connect to Slack.
+- In the virtual-courier folder, create a file called .env to hold the tokens used to connect to Slack. You can use .env.example as a guide.
   ```
   VC_CONNECT_TOKEN="xapp-XXXXXXX"
   VC_BOT_TOKEN="xoxb-XXXXXXX"
