@@ -1,10 +1,10 @@
-# slack-archive (aka virtual-courier)
+# Slack-Archive (aka Virtual-Courier)
 This project supports a Slack application used by the Collections & Loans department of an art museum. When the application is added to a private channel, it generates a CSV and PDF of the channel history and sends the files to the channel. 
 # Setup
-- Install the virtual-courier package.
+- Download the files in this repository.
 - Install dependencies shown in requirements.txt.
 - Ensure that the __Virtual Courier Archive__ application has been installed in the Slack workspace.
-- In the virtual-courier folder, create a file called .env to hold the tokens used to connect to Slack. You can use .env.example as a guide.
+- In the project folder, create a file called .env to hold the tokens used to connect to Slack. You can use .env.example as a starting point.
   ```
   VC_CONNECT_TOKEN="xapp-XXXXXXX"
   VC_BOT_TOKEN="xoxb-XXXXXXX"
