@@ -246,6 +246,8 @@ class VirtualCourierArchive:
 
     def make_csv(self):
         """Create CSV of channel history."""
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
         filepath_abs = os.path.join(self.output_dir, f"{self.channel_name}.csv")
         csv_list = []
         for message in self.messages:
@@ -268,6 +270,8 @@ class VirtualCourierArchive:
 
     def make_pdf(self):
         """Generates a PDF based on the channel history."""
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
         filepath_abs = os.path.join(self.output_dir, f"{self.channel_name}.pdf")
         pdf = FPDF("P", "in", "letter")
         supported_filetypes = tuple(['jpg', 'jpeg', 'png', 'gif'])
