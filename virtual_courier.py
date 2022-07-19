@@ -262,7 +262,7 @@ class VirtualCourierArchive:
                     csv_list.append({"sender": user, "timestamp": ts, "text": text, "file": url})
             else:
                 csv_list.append({"sender": user, "timestamp": ts, "text": text, "file": ''})
-        with open(filepath_abs, 'w', newline='') as csvfile:
+        with open(filepath_abs, 'w', encoding='utf-8-sig', newline='') as csvfile:
             writer = DictWriter(csvfile, fieldnames=columns)
             writer.writeheader()
             writer.writerows(csv_list)
