@@ -34,6 +34,7 @@ Trigger CSV and PDF creation from Command Prompt or Terminal.
   Usage: python path/to/slackless.py <channel_name> [-output] [-post] [-keep]
      <channel_name>: the name of a Slack channel that @Virtual Courier Archive has been invited to
      [-output]: the location where the output folder should be created
+     [-json]: save a json file of the raw channel history in the output folder
      [-post]: send CSV and PDF to the Slack channel
      [-keep]: save images downloaded from the Slack channel in the output folder
   ```

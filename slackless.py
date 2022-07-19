@@ -5,6 +5,7 @@ Those files can be posted to the channel if specified in command line arguments.
 
 import sys
 import os
+import json
 from dotenv import dotenv_values
 from slack_sdk import WebClient
 from virtual_courier import VirtualCourierArchive
@@ -19,6 +20,7 @@ if __name__ == "__main__":
         Usage: python3 path/to/slackless.py <channel_name> [-output] [-post] [-keep]
             <channel_name>: the name of a Slack channel that @Virtual Courier Archive has been invited to
             [-output]: the directory where the output folder should be saved
+            [-json]: save a json file of the raw channel history in the output folder
             [-post]: send CSV and PDF to the channel
             [-keep]: save images downloaded from the Slack channel in the output folder
             """
@@ -44,3 +46,6 @@ if __name__ == "__main__":
         arch.post("pdf")
     if '-keep' not in sys.argv:
         arch.cleanup()
+    if '-json' in sys.argv:
+        with open(os.path.join(arch.output_dir, f"{arch.channel_name}.json"), 'w') as f:
+            json.dump(arch._raw_history.data, f)

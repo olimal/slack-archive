@@ -62,13 +62,13 @@ class VirtualCourierArchive:
         self._set_channel_name(channel_name, event)
         self._set_output_dir(output_dir)
         # Get the channel history
-        raw_history = self._get_channel_history(self.channel_id)
+        self._raw_history = self._get_channel_history(self.channel_id)
         # Set member names for each user that sent a message to the channel
-        self._set_members(raw_history)
+        self._set_members()
         # Set the name of the user who is performing this export
         self._set_user(event)
         self._set_timestamp(event)
-        self._set_messages(raw_history)
+        self._set_messages()
 
     def _set_channel_id(self, channel_name, event):
         if event is not None:
@@ -112,17 +112,22 @@ class VirtualCourierArchive:
                 next = response.data["response_metadata"]["next_cursor"]
                 response = client.conversations_history(channel=channel_id, cursor=next)
                 response_parent.data["messages"] += response.data["messages"]
+            if "response_metadata" in response_parent.data.keys():
+                response_parent.data.pop("response_metadata")
+                response_parent.data["has_more"] = False
             return response_parent
         except SlackApiError as e:
             print("Error while fetching the conversation history")
             raise e
 
-    def _set_members(self, history):
+    def _set_members(self):
         """Given the conversation history of a channel, returns a dictionary of user_id : user_name."""
-        messages = history["messages"]
+        messages = self._raw_history["messages"]
         users = []
         for message in messages:
-            users.append(message["user"])
+            user = message.get("user")
+            if user is not None and user not in users:
+                users.append(user)
         user_dict = {}
         for user in users:
             try:
@@ -158,9 +163,9 @@ class VirtualCourierArchive:
             timestamp = datetime.now().strftime("%m/%d/%Y at %I:%M %p")
         self.timestamp = timestamp
 
-    def _set_messages(self, history):
+    def _set_messages(self):
         """Returns parsed messages that were sent in the channel."""
-        messages_raw = history["messages"]
+        messages_raw = self._raw_history["messages"]
         messages_list = []
         for ind, message in enumerate(reversed(messages_raw)):
             message_dict = self._parse_message(message, ind + 1)
@@ -182,17 +187,25 @@ class VirtualCourierArchive:
                     "url_download": url_download,
                     "url": url
                     })
-        try:
-            user = self.members[message["user"]]
-        except KeyError:
-            user = message.get("user")
+        subtype = message.get("subtype")
+        raw_user = message.get("user")
+        if subtype == 'channel_join':
+            user = 'Slackbot'
+        elif raw_user is None and subtype == 'bot_message':
+            user = message["username"]
+        elif raw_user is None:
+            raise RuntimeError(f"No user for this message:\n{json.loads(message)}")
+        else:
+            user = self.members.get(raw_user)
+            if user is None:
+                user = raw_user
         timestamp = epoch_to_datetime(message["ts"])
         text = self._normalize_text(message.get("text"))
         file_dir = os.path.join(self.output_dir, f"message_{message_id}")
         message_dict = {
             "message_id": message_id,
             "type": message.get("type"),
-            "subtype": message.get("subtype"),
+            "subtype": subtype,
             "text": text,
             "user": user,
             "files": files,
