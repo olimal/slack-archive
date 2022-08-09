@@ -200,7 +200,7 @@ class VirtualCourierArchive:
             if user is None:
                 user = raw_user
         timestamp = epoch_to_datetime(message["ts"])
-        text = self._normalize_text(message.get("text"))
+        text = self._normalize_text(message.get("text"), possible_user_id=True)
         file_dir = os.path.join(self.output_dir, f"message_{message_id}")
         message_dict = {
             "message_id": message_id,
@@ -215,27 +215,29 @@ class VirtualCourierArchive:
             }
         return message_dict
 
-    def _normalize_text(self, text):
+    def _normalize_text(self, text, possible_user_id = True):
         """When user name is known, inserts user name in place of user id in message text.
-        Decodes unicode characters that aren't recognized in latin-1."""
+        Decodes unicode characters that aren't recognized in latin-1.
+        If possible_user_id is set, look for user IDs and replace with user name if found."""
         # Decode unicode character that isn't recognized in latin-1 encoding
         text = text.replace("\u2019", "'")
         text = text.replace("\u2026", "...")
         # Replace instances of user ID with user name.
-        pattern = r"<@[a-zA-Z0-9]*>"
-        result = re.search(pattern, text)
-        if result is not None:
-            result_text = result.group(0)
-            user_id = result_text[2:-1]
-            try:
-                user_name = self.members[user_id]
-            except KeyError:
-                user_name = user_id
-            replace_with = "@" + user_name
-            new_text = text.replace(result_text, replace_with)
-            return new_text
-        else:
-            return text
+        if possible_user_id:
+            pattern = r"<@[a-zA-Z0-9]*>"
+            result = re.search(pattern, text)
+            if result is not None:
+                result_text = result.group(0)
+                user_id = result_text[2:-1]
+                try:
+                    user_name = self.members[user_id]
+                except KeyError:
+                    user_name = user_id
+                replace_with = "@" + user_name
+                new_text = text.replace(result_text, replace_with)
+                return new_text
+            else:
+                return text
 
     def download_files(self):
         """Downloads the image files mentioned in the channel history."""
@@ -297,7 +299,7 @@ class VirtualCourierArchive:
         col_height = pdf.font_size
         line_break = pdf.font_size
         pdf.set_font('Arial', 'B', 12)
-        pdf.cell(col_width, col_height, f"{self.channel_name} Channel Archive", ln=line_break)
+        pdf.cell(col_width, col_height, f"{self.channel_name} Channel Archive".encode('latin-1','strict').decode('latin-1','strict'), ln=line_break)
         pdf.set_font('Arial', '', 12)
         pdf.cell(col_width, col_height, f"Exported on {self.timestamp}", ln=line_break)
         pdf.ln(line_break)
@@ -315,7 +317,7 @@ class VirtualCourierArchive:
                 pdf.multi_cell(col_width, col_height, message_text)
             if len(message["files"]) > 0:
                 for file in message["files"]:
-                    filename = file["filename"]
+                    filename = self._normalize_text(file["filename"], possible_user_id=False)
                     filepath = f"{file_dir}/{filename}"
                     url = file["url"]
                     if filepath.lower().endswith(supported_filetypes):
